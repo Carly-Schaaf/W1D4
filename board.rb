@@ -35,7 +35,7 @@ class Board
   def columns
     rows.transpose
   end
-
+  
   def render
     puts "  #{(0..8).to_a.join(" ")}"
     grid.each_with_index do |row, i|
@@ -55,7 +55,6 @@ class Board
     rows.all? { |row| solved_set?(row) } &&
       columns.all? { |col| solved_set?(col) } &&
       squares.all? { |square| solved_set?(square) }
-    end
   end
 
   def solved_set?(tiles)

@@ -14,14 +14,14 @@ class SudokuGame
     @board = board
   end
 
-  def retrieve_pos_from_ui
+  def get_position_from_user
     p = nil
-    until p && legal_illegibility_of_p?(p)
+    until p && valid_position?(p)
       puts "Please enter a position on the board (e.g., '3,4')"
       print "> "
 
       begin
-        p = parse_inanity(gets.chomp)
+        p = format_position(gets.chomp)
       rescue
         puts "Invalid position entered (did you use a comma?)"
         puts ""
@@ -32,48 +32,49 @@ class SudokuGame
     p
   end
 
-  def retrieve_value_from_ui
+  def get_value_from_user
     v = nil
-    until v && legal_illegibility_of_v?(v)
+    until v && valid_value?(v)
       puts "Please enter a value between 1 and 9 (0 to clear the tile)"
       print "> "
-      v = parse_insanity(gets.chomp)
+      v = user_string_to_num(gets.chomp)
     end
     v
   end
 
-  def parse_inanity(string)
+  def format_position(string)
     string.split(",").map { |char| Integer(char) }
   end
 
-  def parse_insanity(string)
+  def user_string_to_num(string)
     Integer(string)
   end
 
-  def process_parameters
-    pos_to_val(retrieve_pos_from_ui, retrieve_value_from_ui)
+  def process_user_input
+    board.render
+    place_value(get_position_from_user, get_value_from_user)
   end
 
-  def pos_to_val(p, v)
-    board[p] = v
+  def place_value(position, value)
+    board[position] = value
   end
 
-  def commence_proceedings
-    process_parameters until board_process_terminates?
+  def run
+    process_user_input until game_complete?
     puts "Congratulations, you win!"
   end
 
-  def board_process_terminates?
-    board.terminate?
+  def game_complete?
+    board.over?
   end
 
-  def legal_illegibility_of_p?(pos)
+  def valid_position?(pos)
     pos.is_a?(Array) &&
       pos.length == 2 &&
       pos.all? { |x| x.between?(0, board.size - 1) }
   end
 
-  def legal_illegibility_of_v?(val)
+  def valid_value?(val)
     val.is_a?(Integer) &&
       val.between?(0, 9)
   end
@@ -84,4 +85,4 @@ end
 
 
 game = SudokuGame.from_file("puzzles/sudoku1.txt")
-game.commence_proceedings
+game.run
